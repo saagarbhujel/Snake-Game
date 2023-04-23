@@ -11,6 +11,8 @@ let snakeY = boxSize * 5;
 let foodX;
 let foodY;
 
+let snakeBody = []
+
 // let snakeSpeed
 
 let speedX = 0; // speed of snake in x direction 7
@@ -46,15 +48,41 @@ function update() {
   context.fillStyle = "black";
   context.fillRect(0, 0, board.width, board.height);
 
+  
+  //food color and position & food part should be above snake
+  context.fillStyle = "green";
+  context.fillRect(foodX, foodY, boxSize, boxSize);
+
+    // collision with food 12
+    if(snakeX === foodX && snakeY === foodY){
+      snakeBody.push([foodX,foodY])
+      placeFood()
+    }
+
+    //head or body part grow 14
+    for(let i = snakeBody.length-1; i>0 ; i--){
+      //head shift to tail and new part attach to head
+      snakeBody[i] = snakeBody [i-1]  //This is a way to shift each element of the array towards the head of the snake.
+    }
+    if(snakeBody.length){
+      snakeBody[0]= [snakeX, snakeY]
+    }
+
+
+
+
   //snake color 5
   context.fillStyle = "white";
   snakeX += speedX * boxSize; //updating the speed or motion of snake in x direction 8
   snakeY += speedY * boxSize; // updating the speed or motion of snake in y direction
   context.fillRect(snakeX, snakeY, boxSize, boxSize);
+  
+  // to eat food (only eat and leave not attatch to body) 13 
+  for(let i = 0 ; i<snakeBody.length ; i++){
+    context.fillRect(snakeBody[i][0], snakeBody[i][1], boxSize, boxSize)
+  }
 
-  //food color and position
-  context.fillStyle = "green";
-  context.fillRect(foodX, foodY, boxSize, boxSize);
+
 }
 
 //change direction of snake 9
