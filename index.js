@@ -1,3 +1,7 @@
+const button = document.getElementById("btn")
+
+
+
 let boxSize = 25;
 let totalRow = 21; //total no of row
 let totalColumn = 21; //total no of column
@@ -11,12 +15,25 @@ let snakeY = boxSize * 5;
 let foodX;
 let foodY;
 
+//gameover 14
+let gameOver = false;
+
 let snakeBody = []
 
+// score
+let score = 0
+
 // let snakeSpeed
+let intervalID = null
+let initialSpeed = 5   // Initial time interval for setInterval function
+let speedMultiplier =2  // Multiplier to decrease the time interval after eating food
+let currentSpeed= initialSpeed      // Current time interval for setInterval function
 
 let speedX = 0; // speed of snake in x direction 7
 let speedY = 0; //speed of snake in y direction
+
+
+
 
 window.onload = function () {
   //set the board height and width      step 1
@@ -35,7 +52,9 @@ window.onload = function () {
   //   console.log(board)
 
   // Set snake speed 11
-  setInterval(update, 1000 / 10); //snakeSpeed); // update the snake every 1000ms / snakeSpeed
+  
+
+  setInterval(update, 1000/currentSpeed); //snakeSpeed); // update the snake every 1000ms / snakeSpeed
 
 //   update();  // it is done by setInterval because we have to call it multiple times
 };
@@ -43,11 +62,24 @@ window.onload = function () {
 
 
 function update() {
+
+  //gameover
+  if(gameOver){
+    return;
+  }
+
   //3
   //backgroung of board
-  context.fillStyle = "black";
-  context.fillRect(0, 0, board.width, board.height);
+  if(score>=2 && score<=4){
+    context.fillStyle = "maroon"
+    context.fillRect(0, 0, board.width, board.height)
+    
+  }else{
+    context.fillStyle = "black";
+    context.fillRect(0, 0, board.width, board.height);
+  }
 
+ 
   
   //food color and position & food part should be above snake
   context.fillStyle = "green";
@@ -55,9 +87,18 @@ function update() {
 
     // collision with food 12
     if(snakeX === foodX && snakeY === foodY){
-      snakeBody.push([foodX,foodY])
-      placeFood()
+      snakeBody.push([foodX, foodY]);
+      placeFood();
+
+      // score update
+      score += 1;
+
+      // incresing speed after collision with food
+      currentSpeed = initialSpeed / speedMultiplier ; // Decrease the time interval after eating food
+      clearInterval(intervalID); //clear the current interval
+      intervalID = setInterval(update, 1000 / currentSpeed); //set new interval with updated speed//set new interval with updated speed
     }
+    console.log(currentSpeed);
 
     //head or body part grow 14
     for(let i = snakeBody.length-1; i>0 ; i--){
@@ -76,11 +117,46 @@ function update() {
   snakeX += speedX * boxSize; //updating the speed or motion of snake in x direction 8
   snakeY += speedY * boxSize; // updating the speed or motion of snake in y direction
   context.fillRect(snakeX, snakeY, boxSize, boxSize);
+
+
+
+
   
   // to eat food (only eat and leave not attatch to body) 13 
   for(let i = 0 ; i<snakeBody.length ; i++){
     context.fillRect(snakeBody[i][0], snakeBody[i][1], boxSize, boxSize)
   }
+
+
+
+
+  // game over condition
+   //this is for wall touch game over
+  if(snakeX < 0 || snakeX >= totalColumn * boxSize || snakeY < 0 || snakeY >= totalRow * boxSize){
+    gameOver = true;
+    alert("Game Over")
+  }
+
+  // This is for body touch game over
+   for(let i=0; i < snakeBody.length; i++){
+    if(snakeX === snakeBody[i][0] && snakeY === snakeBody[i][1]){
+      gameOver = true;
+      alert("Game Over");
+    }
+   
+   }
+
+
+ //score update in canvas  
+   drawScore()
+
+}
+
+//score display
+function drawScore(){
+ context.fillStyle = "white"
+ context.font = "24px monospace"
+ context.fillText("Score: "+score, 10, 30)
 
 
 }
@@ -124,4 +200,16 @@ function placeFood() {
 
   // increase snake speed after eating food
 //   snakeSpeed += 2;
+}
+button.addEventListener("click", restartGame)
+
+document.addEventListener("keydown",(e)=>{
+  if(e.key==="Enter"){
+    restartGame()
+  }
+})
+
+function restartGame(){
+  location.reload();
+  console.log("clicked1");
 }
