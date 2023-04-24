@@ -70,7 +70,7 @@ function update() {
 
   //3
   //backgroung of board
-  if(score>=2 && score<=4){
+  if(score>=10 && score<=15){
     context.fillStyle = "maroon"
     context.fillRect(0, 0, board.width, board.height)
     
